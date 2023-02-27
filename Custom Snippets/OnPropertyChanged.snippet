@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Class with INotifyPropertyChanged</Title>
+			<Shortcut>notifyclass</Shortcut>
+			<Description>Code snippet for class with INotifyPropertyChanged and methods</Description>
+			<Author>Arjun Sivaprasadam</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+				<SnippetType>SurroundsWith</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>name</ID>
+					<ToolTip>Class name</ToolTip>
+					<Default>MyClass</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp"><![CDATA[
+				public class $name$ : INotifyPropertyChanged
+				{
+					$selected$$end$
+					#region INotifyPropertyChanged implementation
+					public event PropertyChangedEventHandler PropertyChanged;
+
+					protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+					{
+						PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+					}
+
+					/// <summary>
+					///     Sets property if it does not equal existing value. Notifies listeners if change occurs.
+					/// </summary>
+					/// <typeparam name="T">Type of property.</typeparam>
+					/// <param name="member">The property's backing field.</param>
+					/// <param name="value">The new value.</param>
+					/// <param name="propertyName">
+					///     Name of the property used to notify listeners.  This
+					///     value is optional and can be provided automatically when invoked from compilers
+					///     that support <see cref="CallerMemberNameAttribute" />.
+					/// </param>
+					protected virtual bool SetProperty<T>(ref T member, T value, [CallerMemberName] string? propertyName = null)
+					{
+						if (EqualityComparer<T>.Default.Equals(member, value)) return false;
+						member = value;
+						OnPropertyChanged(propertyName ?? throw new ArgumentNullException(nameof(propertyName)));
+						return true;
+					}
+					#endregion
+				}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
