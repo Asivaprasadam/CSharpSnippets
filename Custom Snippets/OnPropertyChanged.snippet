@@ -19,38 +19,42 @@
 					<Default>MyClass</Default>
 				</Literal>
 			</Declarations>
-			<Code Language="csharp"><![CDATA[
-				public class $name$ : INotifyPropertyChanged
-				{
-					$selected$$end$
-					#region INotifyPropertyChanged implementation
-					public event PropertyChangedEventHandler? PropertyChanged;
-
-					protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+			<Code Language="csharp">
+				<![CDATA[
+					public class $name$ : INotifyPropertyChanged, IDisposable
 					{
-						PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-					}
+						$selected$$end$
+						#region INotifyPropertyChanged implementation
+						public event PropertyChangedEventHandler? PropertyChanged;
 
-					/// <summary>
-					///     Sets property if it does not equal existing value. Notifies listeners if change occurs.
-					/// </summary>
-					/// <typeparam name="T">Type of property.</typeparam>
-					/// <param name="member">The property's backing field.</param>
-					/// <param name="value">The new value.</param>
-					/// <param name="propertyName">
-					///     Name of the property used to notify listeners.  This
-					///     value is optional and can be provided automatically when invoked from compilers
-					///     that support <see cref="CallerMemberNameAttribute" />.
-					/// </param>
-					protected virtual bool SetProperty<T>(ref T member, T value, [CallerMemberName] string? propertyName = null)
-					{
-						if (EqualityComparer<T>.Default.Equals(member, value)) return false;
-						member = value;
-						OnPropertyChanged(propertyName ?? throw new ArgumentNullException(nameof(propertyName)));
-						return true;
+						protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+						{
+							PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+						}
+
+						protected virtual bool SetProperty<T>(ref T member, T value, [CallerMemberName] string? propertyName = null)
+						{
+							if (EqualityComparer<T>.Default.Equals(member, value)) return false;
+
+							member = value;
+							OnPropertyChanged(propertyName ?? throw new ArgumentNullException(nameof(propertyName)));
+							return true;
+						}
+
+						protected virtual void Dispose(bool disposing)
+						{
+						}
+
+						public void Dispose()
+						{
+							Dispose(true);
+							GC.SuppressFinalize(this);
+						}
+
+						~$name$() => Dispose(false);
+						#endregion INotifyPropertyChanged implementation
 					}
-					#endregion
-				}]]>
+				]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
